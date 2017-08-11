@@ -9,10 +9,12 @@ namespace Fatec.Cadastro
         private static string nome;
         private static string ra;
         private static string email;
+        private static double altura;
+        private static DateTime dataNasc;
 
         static void Main(string[] args)
         {
-            //ProcessaCadastro();
+            ProcessaCadastro();
             ReadKey();
         }
 
