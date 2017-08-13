@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using static System.Console;
 
@@ -11,6 +12,8 @@ namespace Fatec.Cadastro
         private static string email;
         private static double altura;
         private static DateTime dataNasc;
+        private static ConsoleColor defaultColor = ForegroundColor;
+        private static List<string> competencias = new List<string>();
 
         static void Main(string[] args)
         {
@@ -23,7 +26,77 @@ namespace Fatec.Cadastro
             SolicitaNome();
             SolicitaRA();
             SolicitaEmail();
+            SolicitaAltura();
+            SolicitaDataNasc();
+            SolicitaCompetencias();
+
             ValidaInformacoes();
+        }
+
+        private static void SolicitaCompetencias()
+        {
+            string resposta;
+            if(competencias.Count == 0)
+                WriteLine("Deseja cadastrar competências? Digite S para Sim e N para Não (Default: S).");            
+            else
+                WriteLine("Deseja cadastrar uma nova competencia? Digite S para Sim e N para Não (Default: S).");                
+            
+            resposta = ReadLine();
+            if (string.IsNullOrWhiteSpace(resposta) || resposta.ToUpper() == "S")
+            {
+                SolicitaCompetencia();
+                SolicitaCompetencias();
+            }
+            else if (resposta.ToUpper() != "N")
+            {
+                WriteLine("Informe um valor válido.");
+                SolicitaCompetencias();
+            }
+
+            void SolicitaCompetencia()
+            {
+                WriteLine("Informe a competencia:");
+                string comp = ReadLine();
+                if (string.IsNullOrWhiteSpace(comp))
+                {
+                    WriteLine("Informe uma competencia válida!");
+                    SolicitaCompetencia();
+                }
+                else
+                    competencias.Add(comp);
+            }
+        }
+
+        private static void SolicitaDataNasc()
+        {
+            WriteLine("Informe sua data de nascimento:");
+            try
+            {
+                dataNasc = Convert.ToDateTime(ReadLine());
+            }
+            catch (Exception)
+            {
+                ForegroundColor = ConsoleColor.Red;
+                WriteLine("Informe sua data de nascimento no formato dd/MM/AAAA");
+                ForegroundColor = defaultColor;
+                SolicitaDataNasc();
+            }
+        }
+
+        private static void SolicitaAltura()
+        {
+            WriteLine("Informe a altura");
+            try
+            {                
+                altura = Convert.ToDouble(ReadLine());
+            }
+            catch
+            {
+                ForegroundColor = ConsoleColor.Red;
+                WriteLine("Insira corretamente sua altura!");
+                ForegroundColor = defaultColor;
+                SolicitaAltura();
+            }
         }
 
         private static void ValidaInformacoes()
@@ -31,11 +104,18 @@ namespace Fatec.Cadastro
             WriteLine();
             WriteLine("Informações Inseridas:");
             WriteLine($"Nome: {nome}");
-            WriteLine($"RA: {ra}");
+            WriteLine($"RA: {ra.PadLeft(ra.Length -1, '-')}");
             WriteLine($"Email: {email}");
+            WriteLine($"Altura: {altura.ToString("0.00")}m");
+            WriteLine($"Data de Nascimento: {dataNasc.ToString("dd/MM/yyyy")}");
+            WriteLine("Competências:");
+            competencias.ForEach(gravaCompetencia);
+
             WriteLine();
             ObtemEscolha();
         }
+
+        static void gravaCompetencia(string comp) => Write($"{comp};");
 
         private static void ObtemEscolha()
         {
